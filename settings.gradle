@@ -1,0 +1,5 @@
+rootProject.name = 'book3'
+
+include 'user'
+include 'book'
+
