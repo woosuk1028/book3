@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.common.ApiResponse;
 import com.example.domain.entity.Book;
 import com.example.dto.BookDto;
 import com.example.service.BookService;
@@ -7,10 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
@@ -57,7 +55,7 @@ public class BookController {
 
         Long userId = response.getBody();
         Book saved = bookService.save(dto, userId);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(ApiResponse.success(saved));
     }
 
     @GetMapping("/list")
@@ -65,4 +63,21 @@ public class BookController {
         return ResponseEntity.ok(bookService.findAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Book> getDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(bookService.getDetail(id));
+    }
+
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        boolean result = bookService.delete(id);
+
+        if(result) {
+            return ResponseEntity.ok(ApiResponse.success(null));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.fail(404, "책이 존재하지 않습니다."));
+        }
+    }
 }

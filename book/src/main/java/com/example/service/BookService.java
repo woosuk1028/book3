@@ -4,6 +4,7 @@ import com.example.domain.entity.Book;
 import com.example.dto.BookDto;
 import com.example.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,5 +27,19 @@ public class BookService {
 
     public List<Book> findAll() {
         return bookRepository.findAll();
+    }
+
+    public Book getDetail(Long id) {
+        return bookRepository.findById(id)
+                .orElse(new Book());
+    }
+
+    public boolean delete(Long id) {
+        try {
+            bookRepository.deleteById(id);
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 }
